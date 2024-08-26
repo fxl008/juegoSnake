@@ -24,10 +24,12 @@ class Mapa():
         return (pos[0] == -1 or pos[0] == self.width + 1) or (pos[1] == -1 or pos[1] == self.height + 1)
 
 class Snake():
-    def __init__(self, x, y):
+    def __init__(self, x, y, color, nombre):
         self.cabeza = [x+1, y]
         self.direccion = "DERECHA"
         self.cuerpo = [[x, y]]
+        self.color = color
+        self.nombre = nombre
 
     def mover(self):
         for pos in range(len(self.cuerpo)-1, 0, -1):
@@ -89,6 +91,7 @@ class Display():
         self.red = pygame.Color(255, 0, 0)
         self.green = pygame.Color(0, 255, 0)
         self.blue = pygame.Color(0, 0, 255)
+        self.yellow = pygame.Color(255, 255, 0)
 
     def iniciar_ventana(self):
         # chequear errores
@@ -108,9 +111,9 @@ class Display():
     def dibujar(self, color, x, y, width, height):
         pygame.draw.rect(self.game_window, color, pygame.Rect(x, y, width, height))
 
-    def dibujar_snake(self, snake):
+    def dibujar_snake(self, snake, color):
         for segmento in snake.obtener_posiciones():
-            self.dibujar(self.white, segmento[0]*self.block_width, segmento[1]*self.block_height, self.block_width, self.block_height)
+            self.dibujar(color, segmento[0]*self.block_width, segmento[1]*self.block_height, self.block_width, self.block_height)
 
     def dibujar_comida(self, comida):
         self.dibujar(self.green, comida.pos[0]*self.block_width, comida.pos[1]*self.block_height, self.block_width, self.block_height)
@@ -184,7 +187,7 @@ class Display():
         imagen_puntaje = fuente_puntaje.render(f"Puntaje = {puntaje}", True, color)
 
         rect_puntaje = imagen_puntaje.get_rect()
-        rect_puntaje.midtop = (self.width/2, 1.5*self.height/4)
+        rect_puntaje.midtop = (self.width/2, 1.5*self.height/4 + 50)
 
         self.game_window.blit(imagen_puntaje, rect_puntaje)
 
@@ -253,7 +256,7 @@ class Juego():
                 self.comida.aparecer_comida()
     
         self.display.resetear_ventana()
-        self.display.dibujar_snake(self.snake)
+        self.display.dibujar_snake(self.snake, self.display.white)
         self.display.dibujar_comida(self.comida)
         self.display.escribir_puntaje_juego("times new roman", 10, 5, self.obtener_puntaje())
         pygame.display.update()
@@ -278,7 +281,7 @@ class Juego():
         while True:
             self.comida = Comida(self.game_width, self.game_height)
             self.mapa = Mapa(self.game_width-1, self.game_height-1)
-            self.snake = Snake(self.game_width//6, self.game_height//4)
+            self.snake = Snake(self.game_width//6, self.game_height//4, self.display.white, "Snake")
             
             while not self.termino_juego():
                 self.jugar_hasta_que_termine()
